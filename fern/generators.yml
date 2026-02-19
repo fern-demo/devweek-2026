@@ -1,0 +1,27 @@
+api:
+  specs:
+    - openapi: openapi/openapi.yml
+
+default-group: ts-sdk
+
+groups:
+  go-sdk:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 1.22.4
+        output:
+          location: local-file-system
+          path: ../sdks/go
+        config:
+          module:
+            path: github.com/taskboard/taskboard-go
+          packageName: taskboard
+  ts-sdk:
+    generators:
+      - name: fernapi/fern-typescript-sdk
+        version: 3.43.7
+        output:
+          location: local-file-system
+          path: ../sdks/typescript
+        config:
+          namespaceExport: Taskboard

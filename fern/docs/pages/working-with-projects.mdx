@@ -1,0 +1,54 @@
+---
+title: Working with Projects
+subtitle: Organize tasks into projects
+---
+
+## Creating a Project
+
+```bash
+curl -X POST https://api.taskboard.dev/projects \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Backend Rewrite",
+    "description": "Migrate from monolith to microservices"
+  }'
+```
+
+## Listing Projects
+
+```bash
+curl https://api.taskboard.dev/projects \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Assigning Tasks to a Project
+
+When creating or updating a task, set `project_id`:
+
+```bash
+curl -X PATCH https://api.taskboard.dev/tasks/TASK_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"project_id": "PROJECT_ID"}'
+```
+
+## Viewing Tasks in a Project
+
+Filter the task list by `project_id`:
+
+```bash
+curl "https://api.taskboard.dev/tasks?project_id=PROJECT_ID" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Deleting a Project
+
+<Warning>
+Deleting a project also deletes all tasks associated with it. This action is irreversible.
+</Warning>
+
+```bash
+curl -X DELETE https://api.taskboard.dev/projects/PROJECT_ID \
+  -H "Authorization: Bearer $TOKEN"
+```

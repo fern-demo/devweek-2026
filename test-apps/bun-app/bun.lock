@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "taskboard-bun-test",
+      "dependencies": {
+        "@taskboard/sdk": "file:../../sdks/typescript",
+      },
+    },
+  },
+  "packages": {
+    "@taskboard/sdk": ["@taskboard/sdk@file:../../sdks/typescript", {}],
+  }
+}

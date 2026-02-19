@@ -1,0 +1,11 @@
+{
+  "name": "taskboard-bun-test",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "bun run index.ts"
+  },
+  "dependencies": {
+    "@taskboard/sdk": "file:../../sdks/typescript"
+  }
+}

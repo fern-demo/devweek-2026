@@ -1,0 +1,68 @@
+---
+title: TypeScript SDK
+subtitle: Type-safe client for Node.js, Deno, and Bun
+---
+
+## Installation
+
+```bash
+npm install @taskboard/sdk
+```
+
+## Usage
+
+```typescript
+import { TaskboardClient } from "@taskboard/sdk";
+
+const client = new TaskboardClient({
+  token: "YOUR_TOKEN",
+  environment: "https://api.taskboard.dev",
+});
+
+// Create a task
+const task = await client.tasks.create({
+  title: "Ship v2",
+  priority: "urgent",
+  status: "in_progress",
+  tags: ["release"],
+});
+
+// List tasks
+const result = await client.tasks.list({
+  status: "in_progress",
+  limit: 10,
+});
+
+for (const t of result.data) {
+  console.log(`${t.title} [${t.priority}]`);
+}
+
+// Update a task
+await client.tasks.update(task.id, {
+  status: "done",
+});
+
+// Delete a task
+await client.tasks.delete(task.id);
+```
+
+## Error Handling
+
+```typescript
+import { TaskboardError } from "@taskboard/sdk";
+
+try {
+  await client.tasks.get("nonexistent-id");
+} catch (err) {
+  if (err instanceof TaskboardError) {
+    console.error(err.statusCode, err.message);
+  }
+}
+```
+
+## Configuration
+
+| Option        | Description                        | Default                        |
+|--------------|-------------------------------------|-------------------------------|
+| `token`       | Your API bearer token              | —                              |
+| `environment` | Base URL for the API               | `https://api.taskboard.dev`    |

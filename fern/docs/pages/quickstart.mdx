@@ -1,0 +1,114 @@
+---
+title: Quickstart
+subtitle: Create your first task in under 5 minutes
+---
+
+## 1. Get Your API Token
+
+Sign up at [app.taskboard.dev](https://app.taskboard.dev) and generate an API token from
+your account settings.
+
+## 2. Install an SDK
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```bash
+    npm install @taskboard/sdk
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```bash
+    go get github.com/taskboard/taskboard-go
+    ```
+  </Tab>
+  <Tab title="cURL">
+    No installation needed — just use `curl`.
+  </Tab>
+</Tabs>
+
+## 3. Create a Task
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript
+    import { TaskboardClient } from "@taskboard/sdk";
+
+    const client = new TaskboardClient({ token: "YOUR_TOKEN" });
+
+    const task = await client.tasks.create({
+      title: "My first task",
+      priority: "high",
+      status: "todo",
+    });
+
+    console.log("Created task:", task.id);
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
+
+    import (
+      "context"
+      "fmt"
+      taskboard "github.com/taskboard/taskboard-go/client"
+      taskboardtypes "github.com/taskboard/taskboard-go"
+    )
+
+    func main() {
+      client := taskboard.NewClient(
+        taskboard.WithToken("YOUR_TOKEN"),
+      )
+
+      task, err := client.Tasks.Create(context.Background(), &taskboardtypes.CreateTaskRequest{
+        Title:    "My first task",
+        Priority: taskboardtypes.TaskPriorityHigh.Ptr(),
+        Status:   taskboardtypes.TaskStatusTodo.Ptr(),
+      })
+      if err != nil {
+        panic(err)
+      }
+
+      fmt.Println("Created task:", task.Id)
+    }
+    ```
+  </Tab>
+  <Tab title="cURL">
+    ```bash
+    curl -X POST https://api.taskboard.dev/tasks \
+      -H "Authorization: Bearer YOUR_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "title": "My first task",
+        "priority": "high",
+        "status": "todo"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## 4. List Your Tasks
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript
+    const tasks = await client.tasks.list({ limit: 10 });
+    console.log(`Found ${tasks.total} tasks`);
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    limit := 10
+    tasks, _ := client.Tasks.List(context.Background(), &taskboardtypes.ListTasksRequest{
+      Limit: &limit,
+    })
+    fmt.Printf("Found %d tasks\n", *tasks.Total)
+    ```
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+- [Managing Tasks](/docs/managing-tasks) — filtering, updating, and deleting
+- [Working with Projects](/docs/working-with-projects) — organize tasks into projects
+- [API Reference](/api) — full endpoint documentation

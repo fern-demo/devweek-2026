@@ -1,0 +1,75 @@
+---
+title: Go SDK
+subtitle: Idiomatic Go client for the Taskboard API
+---
+
+## Installation
+
+```bash
+go get github.com/taskboard/taskboard-go
+```
+
+## Usage
+
+```go
+package main
+
+import (
+  "context"
+  "fmt"
+  taskboard "github.com/taskboard/taskboard-go/client"
+  taskboardtypes "github.com/taskboard/taskboard-go"
+)
+
+func main() {
+  client := taskboard.NewClient(
+    taskboard.WithToken("YOUR_TOKEN"),
+  )
+
+  ctx := context.Background()
+
+  // Create a task
+  task, _ := client.Tasks.Create(ctx, &taskboardtypes.CreateTaskRequest{
+    Title:    "Ship v2",
+    Priority: taskboardtypes.TaskPriorityUrgent.Ptr(),
+    Status:   taskboardtypes.TaskStatusInProgress.Ptr(),
+  })
+
+  fmt.Println("Created:", task.Id)
+
+  // List tasks
+  tasks, _ := client.Tasks.List(ctx, &taskboardtypes.ListTasksRequest{})
+  for _, t := range tasks.Data {
+    fmt.Printf("%s [%s]\n", t.Title, t.Priority)
+  }
+
+  // Update a task
+  client.Tasks.Update(ctx, task.Id, &taskboardtypes.UpdateTaskRequest{
+    Status: taskboardtypes.TaskStatusDone.Ptr(),
+  })
+
+  // Delete a task
+  client.Tasks.Delete(ctx, task.Id)
+}
+```
+
+## Error Handling
+
+```go
+task, err := client.Tasks.Get(ctx, "nonexistent-id")
+if err != nil {
+  var apiErr *core.APIError
+  if errors.As(err, &apiErr) {
+    fmt.Println("Status:", apiErr.StatusCode)
+    fmt.Println("Message:", apiErr.Message)
+  }
+}
+```
+
+## Configuration
+
+| Option                   | Description                     | Default                        |
+|-------------------------|---------------------------------|-------------------------------|
+| `WithToken(token)`       | Set the bearer token           | —                              |
+| `WithBaseURL(url)`       | Override the base URL           | `https://api.taskboard.dev`    |
+| `WithHTTPClient(client)` | Use a custom `http.Client`     | Default client                 |

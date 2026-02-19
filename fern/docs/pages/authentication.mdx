@@ -1,0 +1,50 @@
+---
+title: Authentication
+subtitle: Secure your API requests with bearer tokens
+---
+
+All Taskboard API endpoints require authentication via a **Bearer token** in the `Authorization` header.
+
+## Getting a Token
+
+Request an API token from the [Taskboard Dashboard](https://app.taskboard.dev). Tokens are JWTs
+with a configurable expiration.
+
+## Using Your Token
+
+Include the token in every request:
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  https://api.taskboard.dev/tasks
+```
+
+With the TypeScript SDK:
+
+```typescript
+import { TaskboardClient } from "@taskboard/sdk";
+
+const client = new TaskboardClient({
+  token: "YOUR_TOKEN",
+});
+```
+
+With the Go SDK:
+
+```go
+import taskboard "github.com/taskboard/taskboard-go/client"
+
+client := taskboard.NewClient(
+  taskboard.WithToken("YOUR_TOKEN"),
+)
+```
+
+## Error Responses
+
+If your token is missing or invalid, the API returns a `401 Unauthorized` response:
+
+```json
+{
+  "message": "Missing or invalid authentication"
+}
+```

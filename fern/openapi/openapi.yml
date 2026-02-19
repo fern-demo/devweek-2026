@@ -1,0 +1,450 @@
+openapi: 3.1.0
+info:
+  title: Taskboard API
+  version: 1.0.0
+  description: |
+    A simple task management API for creating, reading, updating, and deleting tasks.
+    Organize work with projects and track progress with statuses and priorities.
+  contact:
+    name: Taskboard Support
+    email: support@taskboard.dev
+
+servers:
+  - url: https://api.taskboard.dev
+    description: Production
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Tasks
+    description: Create and manage tasks
+  - name: Projects
+    description: Organize tasks into projects
+
+paths:
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [Tasks]
+      summary: List all tasks
+      description: Returns a paginated list of tasks. Optionally filter by project, status, or priority.
+      parameters:
+        - name: project_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter tasks by project ID
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/TaskStatus"
+          description: Filter tasks by status
+        - name: priority
+          in: query
+          schema:
+            $ref: "#/components/schemas/TaskPriority"
+          description: Filter tasks by priority
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Maximum number of tasks to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Number of tasks to skip
+      responses:
+        "200":
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      operationId: createTask
+      tags: [Tasks]
+      summary: Create a task
+      description: Creates a new task and returns it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        "201":
+          description: The created task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /tasks/{task_id}:
+    get:
+      operationId: getTask
+      tags: [Tasks]
+      summary: Get a task
+      description: Returns a single task by its ID.
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: The requested task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    patch:
+      operationId: updateTask
+      tags: [Tasks]
+      summary: Update a task
+      description: Updates an existing task. Only provided fields will be changed.
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: The updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      operationId: deleteTask
+      tags: [Tasks]
+      summary: Delete a task
+      description: Permanently deletes a task.
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "204":
+          description: Task deleted successfully
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [Projects]
+      summary: List all projects
+      description: Returns all projects accessible to the authenticated user.
+      responses:
+        "200":
+          description: A list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      operationId: createProject
+      tags: [Projects]
+      summary: Create a project
+      description: Creates a new project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "201":
+          description: The created project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /projects/{project_id}:
+    get:
+      operationId: getProject
+      tags: [Projects]
+      summary: Get a project
+      description: Returns a single project by its ID.
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: The requested project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      operationId: deleteProject
+      tags: [Projects]
+      summary: Delete a project
+      description: Permanently deletes a project and all its tasks.
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "204":
+          description: Project deleted successfully
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The unique identifier of the task
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The unique identifier of the project
+
+  schemas:
+    TaskStatus:
+      type: string
+      enum: [backlog, todo, in_progress, done, cancelled]
+      description: The current status of a task
+
+    TaskPriority:
+      type: string
+      enum: [low, medium, high, urgent]
+      description: The priority level of a task
+
+    Task:
+      type: object
+      required: [id, title, status, priority, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task
+        title:
+          type: string
+          description: Short summary of the task
+          example: Implement user authentication
+        description:
+          type: string
+          description: Detailed description of the task
+          example: Add JWT-based auth with refresh tokens
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        project_id:
+          type: string
+          format: uuid
+          description: The project this task belongs to
+        assignee:
+          type: string
+          description: Email of the person assigned to this task
+          example: dev@taskboard.dev
+        due_date:
+          type: string
+          format: date
+          description: The date this task is due
+        tags:
+          type: array
+          items:
+            type: string
+          description: Labels attached to this task
+          example: [backend, auth]
+        created_at:
+          type: string
+          format: date-time
+          description: When the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the task was last updated
+
+    CreateTaskRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          description: Short summary of the task
+        description:
+          type: string
+          description: Detailed description of the task
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        project_id:
+          type: string
+          format: uuid
+          description: The project to assign this task to
+        assignee:
+          type: string
+          description: Email of the person to assign
+        due_date:
+          type: string
+          format: date
+          description: The date this task is due
+        tags:
+          type: array
+          items:
+            type: string
+          description: Labels to attach to this task
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        project_id:
+          type: string
+          format: uuid
+        assignee:
+          type: string
+        due_date:
+          type: string
+          format: date
+        tags:
+          type: array
+          items:
+            type: string
+
+    TaskList:
+      type: object
+      required: [data, total]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        total:
+          type: integer
+          description: Total number of tasks matching the query
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    Project:
+      type: object
+      required: [id, name, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the project
+        name:
+          type: string
+          description: Name of the project
+          example: Backend Rewrite
+        description:
+          type: string
+          description: A brief description of the project
+        created_at:
+          type: string
+          format: date-time
+          description: When the project was created
+
+    CreateProjectRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: Name of the project
+        description:
+          type: string
+          description: A brief description of the project
+
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

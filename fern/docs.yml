@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/docs-yml.json
+
+instances:
+  - url: taskboard.docs.buildwithfern.com
+
+title: Taskboard API Docs
+
+colors:
+  accent-primary:
+    light: "#6D28D9"
+    dark: "#A78BFA"
+  background:
+    light: "#FFFFFF"
+    dark: "#0F0F14"
+  sidebar-background:
+    light: "#F9FAFB"
+    dark: "#15151C"
+  header-background:
+    light: "#FFFFFF"
+    dark: "#0F0F14"
+  card-background:
+    light: "#F3F4F6"
+    dark: "#1C1C27"
+  border:
+    light: "#E5E7EB"
+    dark: "#2D2D3D"
+
+theme:
+  body: canvas
+
+typography:
+  headingsFont:
+    name: Inter
+    path: https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap
+  bodyFont:
+    name: Inter
+    path: https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap
+  codeFont:
+    name: JetBrains Mono
+    path: https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap
+
+navbar-links:
+  - type: secondary
+    text: GitHub
+    url: https://github.com/taskboard
+  - type: primary
+    text: Dashboard
+    url: https://app.taskboard.dev
+
+tabs:
+  docs:
+    display-name: Guides
+    icon: book-open
+  api:
+    display-name: API Reference
+    icon: puzzle
+  sdks:
+    display-name: SDKs
+    icon: code
+
+navigation:
+  - tab: docs
+    layout:
+      - section: Getting Started
+        contents:
+          - page: Welcome
+            path: docs/pages/welcome.mdx
+          - page: Authentication
+            path: docs/pages/authentication.mdx
+          - page: Quickstart
+            path: docs/pages/quickstart.mdx
+      - section: Guides
+        contents:
+          - page: Managing Tasks
+            path: docs/pages/managing-tasks.mdx
+          - page: Working with Projects
+            path: docs/pages/working-with-projects.mdx
+
+  - tab: api
+    layout:
+      - api: API Reference
+
+  - tab: sdks
+    layout:
+      - section: SDKs
+        contents:
+          - page: TypeScript SDK
+            path: docs/pages/sdk-typescript.mdx
+          - page: Go SDK
+            path: docs/pages/sdk-go.mdx

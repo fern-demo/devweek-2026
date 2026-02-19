@@ -1,0 +1,60 @@
+---
+title: Managing Tasks
+subtitle: Create, update, filter, and delete tasks
+---
+
+## Creating a Task
+
+At minimum, a task needs a `title`. All other fields are optional:
+
+```bash
+curl -X POST https://api.taskboard.dev/tasks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Design landing page",
+    "description": "Create mockups for the new marketing site",
+    "priority": "high",
+    "status": "todo",
+    "assignee": "designer@company.com",
+    "due_date": "2026-03-15",
+    "tags": ["design", "marketing"]
+  }'
+```
+
+## Filtering Tasks
+
+Use query parameters to narrow results:
+
+| Parameter    | Type   | Description              |
+|-------------|--------|--------------------------|
+| `project_id` | UUID   | Filter by project        |
+| `status`     | string | `backlog`, `todo`, `in_progress`, `done`, `cancelled` |
+| `priority`   | string | `low`, `medium`, `high`, `urgent` |
+| `limit`      | int    | Results per page (1–100) |
+| `offset`     | int    | Skip N results           |
+
+```bash
+curl "https://api.taskboard.dev/tasks?status=in_progress&priority=high&limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Updating a Task
+
+Use `PATCH` to update specific fields without replacing the entire task:
+
+```bash
+curl -X PATCH https://api.taskboard.dev/tasks/TASK_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "done"}'
+```
+
+## Deleting a Task
+
+```bash
+curl -X DELETE https://api.taskboard.dev/tasks/TASK_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+A successful delete returns `204 No Content`.
