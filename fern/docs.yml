@@ -1,9 +1,14 @@
 # yaml-language-server: $schema=https://schema.buildwithfern.dev/docs-yml.json
 
 instances:
-  - url: taskboard.docs.buildwithfern.com
+  - url: sandeep-taskboard.docs.buildwithfern.com
 
 title: Taskboard API Docs
+
+logo:
+  dark: assets/taskboard-logo-dark.png
+  light: assets/taskboard-logo.png
+  height: 28
 
 colors:
   accent-primary:
@@ -28,21 +33,11 @@ colors:
 theme:
   body: canvas
 
-typography:
-  headingsFont:
-    name: Inter
-    path: https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap
-  bodyFont:
-    name: Inter
-    path: https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap
-  codeFont:
-    name: JetBrains Mono
-    path: https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap
 
 navbar-links:
   - type: secondary
     text: GitHub
-    url: https://github.com/taskboard
+    url: https://github.com/fern-demo/devweek-2026
   - type: primary
     text: Dashboard
     url: https://app.taskboard.dev
